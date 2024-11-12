@@ -8,6 +8,8 @@ const capsLockEnabled = ref(false);
 const isShowed = ref(false);
 const shiftActive = ref(false);
 
+
+
 // ФУНКЦИЯ ДЛЯ ПЕРЕКЛЮЧЕНИЯ ВИДИМОСТИ КЛАВИАТУРЫ
 const toggleKeyboard = () => {
   isShowed.value = !isShowed.value;
@@ -17,6 +19,9 @@ const toggleKeyboard = () => {
 const displayValue = computed(() => {
   return inputValue.value;
 });
+const clearInput = () => {
+  inputValue.value = "";
+}
 
 // ФУНКЦИЯ ДЛЯ ОТОБРАЖЕНИЯ ЗНАЧЕНИЙ КЛАВИШ
 const displayedKeyValue = (key) => {
@@ -49,7 +54,7 @@ const handleKeyPress = (key) => {
       break;
     default:
       if (keyValue !== "CapsLock" && keyValue !== "Shift") {
-        inputValue.value += displayedKeyValue(key); 
+        inputValue.value += displayedKeyValue(key);
       }
       break;
   }
@@ -61,8 +66,8 @@ const handleKeyPress = (key) => {
     <InputField v-model="displayValue" />
     <button @click="toggleKeyboard" class="btn-showed">Открыть/закрыть клавиатуру</button>
     <transition name="keyboard">
-      <KeyboardContainer v-if="isShowed" @keyPress="handleKeyPress" :capsLockEnabled="capsLockEnabled"
-        :shiftActive="shiftActive" :displayedKeyValue="displayedKeyValue" />
+      <KeyboardContainer v-if="isShowed" @keyPress="handleKeyPress" @deleteAll="clearInput" :capsLockEnabled="capsLockEnabled"
+        :shiftActive="shiftActive" :displayedKeyValue="displayedKeyValue"  />
     </transition>
   </div>
 </template>

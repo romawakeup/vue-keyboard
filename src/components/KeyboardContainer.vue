@@ -1,10 +1,13 @@
 <script setup>
 import { ref } from "vue";
 import KeyButtonLangs from "./KeyButtonLangs.vue";
+import KeyButtonDelete from "./KeyButtonDelete.vue"
 
 
 const emit = defineEmits(['keyPress']);
 const props = defineProps(['capsLockEnabled', 'shiftActive', 'displayedKeyValue']);
+
+
 
 // РАССКЛАДКИ ЯЗЫКОВ ДЛЯ КЛАВИАТУРЫ
 const keyboardLayouts = ref({
@@ -208,6 +211,10 @@ const handleKeyPress = (key) => {
   emit('keyPress', key); // ЭМИТИРИУЕМ ОБЪЕКТ КЛАВИШИ
 };
 
+const hadleDeleteAll = () => {
+  emit('deleteAll'); // ЭМИТИРИУЕМ ОБЪЕКТ КЛАВИШИ
+};
+
 
 // СПЕЦАИЛЬНЫЕ КЛАВИШИ
 const specialKeys = {
@@ -234,6 +241,7 @@ const specialKeys = {
     </div>
     <!-- КОМПОНЕНТ ДЛЯ ВЫБОРА РАСКЛАДКИ -->
     <KeyButtonLangs @changeLayout="changeLayout" />
+    <KeyButtonDelete @deleteAll="hadleDeleteAll"/>
   </div>
 </template>
 
