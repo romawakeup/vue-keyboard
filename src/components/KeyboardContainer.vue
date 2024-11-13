@@ -12,7 +12,7 @@ const shiftActive = ref(false);
 
 // ФУНКЦИЯ ДЛЯ ОПРЕДЕЛЕНИЯ ОТОБРАЖАЕМОГО ЗНАЧЕНИЯ КЛАВИШИ
 const displayedKeyValue = (key) => {
-  // ОПРЕДЕЛЯЕТ, КАКОЕ ЗНАЧЕНИЕ ДОЛЖНО БЫТЬ ОТОБРАЖЕНО В ЗАВИСИМОСТИ ОТ СТАТУСА SHIFT И CAPS LOCK
+  // ОПРЕДЕЛЯЕТ КАКОЕ ЗНАЧЕНИЕ ДОЛЖНО БЫТЬ ОТОБРАЖЕНО В ЗАВИСИМОСТИ ОТ СТАТУСА ШИФТ И КАПС ЛОК
   if (shiftActive.value && key.keyShift) {
     return key.keyShift;
   }
@@ -247,7 +247,7 @@ const changeLayout = (layout) => {
   currentLayout.value = layout;
 };
 
-// ОПРЕДЕЛЕНИЕ СПЕЦИАЛЬНЫХ КЛАВИШ С ШИРИНАМИ
+// ДЛЯ СПЕЦИАЛЬНЫХ КЛАВИШ
 const specialKeys = {
   BackSpace: "key-wide",
   CapsLock: "key-wide",
@@ -255,7 +255,7 @@ const specialKeys = {
   Space: "key-space",
 };
 
-// ФУНКЦИЯ ДЛЯ ПРОВЕРКИ, АКТИВНА ЛИ КЛАВИША
+// ФУНКЦИЯ ДЛЯ ПРОВЕРКИ АКТИВНА ЛИ КЛАВИША
 const isKeyActive = (keyValue) => {
   return (keyValue === 'CapsLock' && capsLockEnabled.value) ||
     (keyValue === 'Shift' && shiftActive.value);

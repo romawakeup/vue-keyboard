@@ -7,7 +7,6 @@ const props = defineProps({
 
 const emit = defineEmits(['update:modelValue', 'focus']);
 
-// СОЗДАНИЕ РЕФЕРЕНСА ДЛЯ ХРАНЕНИЯ ЗНАЧЕНИЯ ВВОДА
 const inputValue = ref(props.modelValue);
 
 watch(() => props.modelValue, (newValue) => {

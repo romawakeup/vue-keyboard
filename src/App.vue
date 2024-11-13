@@ -11,7 +11,7 @@ const onInputFocus = () => {
 };
 
 const onDocumentClick = (e) => {
-  // ПРОВЕРЯЕТ КЛИК ПО КЛАВИАТУРЕ ПОЛЕ ВВОДА КНОПКЕ
+  // ПРОВЕРЯЕТ КЛИК ПО КЛАВИАТУРЕ, ПОЛЕ ВВОДА, КНОПКЕ
   if (e.target.closest('.keyboard') || e.target.closest('.input-field') || e.target.closest('.btn-layout')) {
     return;
   }
