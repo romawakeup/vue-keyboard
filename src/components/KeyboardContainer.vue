@@ -2,13 +2,55 @@
 import { ref } from "vue";
 import KeyItem from "./KeyItem.vue";
 import KeyButtonLangs from "./KeyButtonLangs.vue";
-import KeyButtonDelete from "./KeyButtonDelete.vue"
-
+import KeyButtonDelete from "./KeyButtonDelete.vue";
 
 const emit = defineEmits(['keyPress', 'deleteAll']);
-const props = defineProps(['capsLockEnabled', 'shiftActive', 'displayedKeyValue']);
+const props = defineProps(['inputValue']);
 
-// РАССКЛАДКИ ЯЗЫКОВ ДЛЯ КЛАВИАТУРЫ
+const capsLockEnabled = ref(false);
+const shiftActive = ref(false);
+
+// ФУНКЦИЯ ДЛЯ ОПРЕДЕЛЕНИЯ ОТОБРАЖАЕМОГО ЗНАЧЕНИЯ КЛАВИШИ
+const displayedKeyValue = (key) => {
+  // ОПРЕДЕЛЯЕТ, КАКОЕ ЗНАЧЕНИЕ ДОЛЖНО БЫТЬ ОТОБРАЖЕНО В ЗАВИСИМОСТИ ОТ СТАТУСА SHIFT И CAPS LOCK
+  if (shiftActive.value && key.keyShift) {
+    return key.keyShift;
+  }
+  if (capsLockEnabled.value && key.keyCaps) {
+    return key.keyCaps;
+  }
+  return key.keyDisplay;
+};
+
+// ФУНКЦИЯ ДЛЯ ОБРАБОТКИ НАЖАТИЯ КЛАВИШИ
+const handleKeyPress = (key) => {
+  const keyValue = key.keyValue;
+  let newValue = props.inputValue;
+
+  switch (keyValue) {
+    case "CapsLock":
+      capsLockEnabled.value = !capsLockEnabled.value;
+      break;
+    case "Shift":
+      shiftActive.value = !shiftActive.value;
+      break;
+    case "BackSpace":
+      emit('deleteAll');
+      newValue = newValue.slice(0, -1);
+      break;
+    case "Space":
+      newValue += " ";
+      break;
+    default:
+      if (keyValue !== "CapsLock" && keyValue !== "Shift") {
+        newValue += displayedKeyValue(key);
+      }
+      break;
+  }
+
+  emit('keyPress', newValue);
+};
+
 const keyboardLayouts = ref({
   en: [
     [
@@ -197,20 +239,15 @@ const keyboardLayouts = ref({
 }
 )
 
-// ПЕРВОНАЧАЛЬНАЯ РАССКЛАДКА КЛАВЫ ПРИ ОТКРЫТИИ
+// УСТАНАВЛИВАЕТ АНГЛИЙСКУЮ РАСКЛАДКУ ПО УМОЛЧАНИЮ
 const currentLayout = ref('en');
 
-// ФУНКЦИЯ ДЛЯ СМЕНЫ РАСКЛАДКИ КЛАВЫ
+// ФУНКЦИЯ ДЛЯ СМЕНЫ РАСКЛАДКИ КЛАВИАТУРЫ
 const changeLayout = (layout) => {
   currentLayout.value = layout;
 };
 
-const hadleDeleteAll = () => {
-  emit('deleteAll'); // ЭМИТИРИУЕМ ОБЪЕКТ КЛАВИШИ
-};
-
-
-// СПЕЦАИЛЬНЫЕ КЛАВИШИ
+// ОПРЕДЕЛЕНИЕ СПЕЦИАЛЬНЫХ КЛАВИШ С ШИРИНАМИ
 const specialKeys = {
   BackSpace: "key-wide",
   CapsLock: "key-wide",
@@ -218,14 +255,11 @@ const specialKeys = {
   Space: "key-space",
 };
 
-// ФУНКЦИЯ ЧТОБ СПЕЦИАЛЬНЫЙ КЛАВИШИ БЫЛИ ПОДКРАШЕНЫ КОГДА АКТИВНЫ
+// ФУНКЦИЯ ДЛЯ ПРОВЕРКИ, АКТИВНА ЛИ КЛАВИША
 const isKeyActive = (keyValue) => {
-  return (keyValue === 'CapsLock' && props.capsLockEnabled) ||
-    (keyValue === 'Shift' && props.shiftActive);
+  return (keyValue === 'CapsLock' && capsLockEnabled.value) ||
+    (keyValue === 'Shift' && shiftActive.value);
 };
-
-
-
 </script>
 
 <template>
@@ -233,10 +267,10 @@ const isKeyActive = (keyValue) => {
     <div v-for="row in keyboardLayouts[currentLayout]" :key="row" class="keyboard-row">
       <KeyItem v-for="item in row" :key="item" :displayedKeyValue="displayedKeyValue(item)"
         :isActive="isKeyActive(item.keyValue)" :specialClass="specialKeys[item.keyValue]"
-        @keyPress="emit('keyPress', item)" />
+        @keyPress="handleKeyPress(item)" />
     </div>
     <KeyButtonLangs @changeLayout="changeLayout" />
-    <KeyButtonDelete @deleteAll="hadleDeleteAll" />
+    <KeyButtonDelete @deleteAll="emit('deleteAll')" />
   </div>
 </template>
 

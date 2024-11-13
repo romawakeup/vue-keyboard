@@ -4,98 +4,50 @@ import InputField from "./components/InputField.vue";
 import KeyboardContainer from "./components/KeyboardContainer.vue";
 
 const inputValue = ref("");
-
-const capsLockEnabled = ref(false);
-const isShowed = ref(false);
-const shiftActive = ref(false);
-
-const keyboardComponent = ref(null);
-const inputComponent = ref(null);
-
-const clearInput = () => {
-  inputValue.value = "";
-}
-
+const isKeyboardVisible = ref(false);
 
 const onInputFocus = () => {
-  isShowed.value = true;
-}
-
-// ФУНКЦИЯ ДЛЯ ОТОБРАЖЕНИЯ ЗНАЧЕНИЙ КЛАВИШ
-const displayedKeyValue = (key) => {
-  if (shiftActive.value && key.keyShift) {
-    return key.keyShift;
-  }
-
-  if (capsLockEnabled.value && key.keyCaps) {
-    return key.keyCaps;
-  }
-
-  return key.keyDisplay;
-};
-
-// ФУНКЦИЯ ДЛЯ ОБРАБОТКИ СПЕЦИАЛЬНЫХ КЛАВИШ
-const handleKeyPress = (key) => {
-  const keyValue = key.keyValue;
-  switch (keyValue) {
-    case "CapsLock":
-      capsLockEnabled.value = !capsLockEnabled.value; // ПЕРЕКЛЮЧАЕМ КАПС ЛОК
-      break;
-    case "Shift":
-      shiftActive.value = !shiftActive.value; // ВКЛЮЧАЕМ ВЫКЛЮЧАЕМ ШИФТ
-      break;
-    case "BackSpace":
-      inputValue.value = inputValue.value.slice(0, -1); // УДАЛЯЕМ ПОСЛЕДНИЙ СИМВОЛ
-      break;
-    case "Space":
-      inputValue.value += " "; // ДОБАВЛЯЕТ ПРОБЕЛ
-      break;
-    default:
-      if (keyValue !== "CapsLock" && keyValue !== "Shift") {
-        inputValue.value += displayedKeyValue(key);
-      }
-      break;
-  }
+  isKeyboardVisible.value = true; // ПОКАЗЫВАЕТ КЛАВИАТУРУ ПРИ ФОКУСЕ
 };
 
 const onDocumentClick = (e) => {
-  if (
-    keyboardComponent.value && keyboardComponent.value.$el.contains(e.target) ||
-    inputComponent.value && inputComponent.value.$el.contains(e.target) ||
-    e.target.closest('.layout-menu') || e.target.closest('.key-langs')
-  ) {
+  // ПРОВЕРЯЕТ КЛИК ПО КЛАВИАТУРЕ ПОЛЕ ВВОДА КНОПКЕ
+  if (e.target.closest('.keyboard') || e.target.closest('.input-field') || e.target.closest('.btn-layout')) {
     return;
   }
-  isShowed.value = false;
+  isKeyboardVisible.value = false;
 };
 
+// РЕГИСТРАЦИЯ ОБРАБОТЧИКА СОБЫТИЙ ПРИ МОНТАЖЕ КОМПОНЕНТА
 onBeforeMount(() => {
   document.addEventListener('click', onDocumentClick);
-})
+});
 
+// УДАЛЕНИЕ ОБРАБОТЧИКА СОБЫТИЙ ПРИ УДАЛЕНИИ КОМПОНЕНТА
 onBeforeUnmount(() => {
   document.removeEventListener('click', onDocumentClick);
-})
+});
 </script>
 
 <template>
   <div>
-    <InputField ref="inputComponent" v-model="inputValue" @focus="onInputFocus" />
+    <InputField v-model="inputValue" @focus="onInputFocus" />
     <transition name="keyboard">
-      <KeyboardContainer v-if="isShowed" ref="keyboardComponent" @keyPress="handleKeyPress" @deleteAll="clearInput"
-        :capsLockEnabled="capsLockEnabled" :shiftActive="shiftActive" :displayedKeyValue="displayedKeyValue" />
+      <KeyboardContainer v-if="isKeyboardVisible" :inputValue="inputValue" @deleteAll="inputValue = ''"
+        @keyPress="inputValue = $event" />
     </transition>
   </div>
 </template>
 
 <style scoped>
-.input{
+.input {
   width: 50%;
   padding: 10px;
   border: 3px solid #313743;
   border-radius: 5px;
   transition: .5s ease;
 }
+
 @keyframes keyboardDown {
   0% {
     opacity: 1;

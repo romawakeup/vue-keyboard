@@ -1,24 +1,35 @@
 <script setup>
 import { ref, watch } from "vue";
 
-const props = defineProps(['modelValue']);
+const props = defineProps({
+  modelValue: String,
+});
+
 const emit = defineEmits(['update:modelValue', 'focus']);
 
+// СОЗДАНИЕ РЕФЕРЕНСА ДЛЯ ХРАНЕНИЯ ЗНАЧЕНИЯ ВВОДА
 const inputValue = ref(props.modelValue);
-
-const updateValue = () => {
-  emit('update:modelValue', inputValue.value);
-};
 
 watch(() => props.modelValue, (newValue) => {
   inputValue.value = newValue;
 });
 
+// ФУНКЦИЯ ДЛЯ ОБНОВЛЕНИЯ ЗНАЧЕНИЯ ВВОДА
+const updateValue = (event) => {
+  inputValue.value = event.target.value;
+  emit('update:modelValue', inputValue.value);
+};
 </script>
 
 <template>
-  <input type="text" v-model="inputValue" placeholder="Введите текст..." class="input-field"
-    @focus="emit('focus')" @input="updateValue">
+  <input
+    type="text"
+    :value="inputValue"
+    placeholder="Введите текст..."
+    class="input-field"
+    @focus="emit('focus')"
+    @input="updateValue"
+  />
 </template>
 
 <style scoped>

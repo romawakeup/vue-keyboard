@@ -1,21 +1,29 @@
 <script setup>
-
 const emit = defineEmits(['keyPress']);
 
 const props = defineProps({
-  keyData: Object,
-  displayedKeyValue: String,
-  isActive: Boolean,
-  specialClass: String,
+  displayedKeyValue: {
+    type: String,
+    required: true,
+  },
+  isActive: {
+    type: Boolean,
+    default: false,
+  },
+  specialClass: {
+    type: String,
+    default: '',
+  },
 });
 
+// ФУНКЦИЯ ДЛЯ ОБРАБОТКИ НАЖАТИЯ КЛАВИШИ
 const handleKeyPress = () => {
   emit('keyPress', props.keyData);
 };
 </script>
 
 <template>
-  <div @click="handleKeyPress" class="key" :class="[specialClass, { 'key-active': isActive }]">
+  <div @click="handleKeyPress" class="key" :class="{ 'key-active': isActive, [specialClass]: specialClass }">
     {{ displayedKeyValue }}
   </div>
 </template>

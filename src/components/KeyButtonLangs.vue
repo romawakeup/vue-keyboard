@@ -1,46 +1,62 @@
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
 
-const emit = defineEmits(['changeLayout']); // ЭМИТАЦИЯ СОБЫТИЙ
+const emit = defineEmits(['changeLayout']);
 
-const layouts = ['en', 'ru', 'de']; // ДОСТУПНЫЕ РАСКЛАДКИ
+// ДОСТУПНЫЕ РАСКЛАДКИ
+const layouts = ['en', 'ru', 'de'];
+// УСТАНАВЛИВАЕТ АНГЛИЙСКУЮ РАСКЛАДКУ ПО УМОЛЧАНИЮ
 const currentLayout = ref(layouts[0]);
-const isMenuVisible = ref(false); // ДЛЯ ВИДИМОСТИ РАСКЛАДКИ
+// ИНИЦИАЛИЗАЦИЯ СТАТУСА ВИДИМОСТИ МЕНЮ
+const isMenuVisible = ref(false);
 
-// ФУНКЦИЯ ДЛЯ ПЕРЕКЛЮЧЕНИЯ ВИДИМОСТИ МЕНЮ ЯЗЫКОВ
+// ФУНКЦИЯ ДЛЯ ПЕРЕКЛЮЧЕНИЯ ВИДИМОСТИ МЕНЮ
 const toggleMenu = () => {
   isMenuVisible.value = !isMenuVisible.value;
 };
 
-// ФУНКЦИЯ ДЛЯ ВЫБОРА ЯЗЫКОВ
+// ФУНКЦИЯ ДЛЯ ВЫБОРА РАСКЛАДКИ
 const selectLayout = (layout) => {
   currentLayout.value = layout;
   emit('changeLayout', layout);
   isMenuVisible.value = false;
 };
 
+const currentLayoutLabel = computed(() => currentLayout.value.toUpperCase());
 
-const currentLayoutLabel = computed(() => {
-  return currentLayout.value.toUpperCase();
+// ФУНКЦИЯ ДЛЯ ОБРАБОТКИ КЛИКОВ ЗА ПРЕДЕЛАМИ МЕНЮ
+const handleClickOutside = (event) => {
+  const menu = document.querySelector('.layout-menu');
+  const button = document.querySelector('.key-langs');
+  if (isMenuVisible.value && menu && !menu.contains(event.target) && !button.contains(event.target)) {
+    isMenuVisible.value = false;
+  }
+};
+
+
+onMounted(() => {
+  document.addEventListener('click', handleClickOutside);
+});
+
+onBeforeUnmount(() => {
+  document.removeEventListener('click', handleClickOutside);
 });
 </script>
 
 <template>
-  <button @click="toggleMenu" class="key key-langs" :aria-expanded="isMenuVisible.toString()"
-    aria-label="Переключить языковое меню">
+  <button @click="toggleMenu" class="key key-langs">
     <img src="../img/lang-icon.png" class="lang-icon">
     {{ currentLayoutLabel }}
   </button>
-  <div v-if="isMenuVisible" class="layout-menu">
+  <div v-if="isMenuVisible" class="menu-layout" role="menu">
     <button v-for="layout in layouts" :key="layout" @click="selectLayout(layout)" class="btn-layout">
       {{ layout }}
     </button>
   </div>
-
 </template>
 
 <style scoped>
-.layout-menu {
+.menu-layout{
   position: absolute;
   left: 2.3%;
   border-radius: 5px;
