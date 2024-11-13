@@ -1,26 +1,24 @@
 <script setup>
-import { ref, computed } from "vue";
+import { ref, onBeforeMount, onBeforeUnmount } from "vue";
 import InputField from "./components/InputField.vue";
 import KeyboardContainer from "./components/KeyboardContainer.vue";
 
 const inputValue = ref("");
+
 const capsLockEnabled = ref(false);
 const isShowed = ref(false);
 const shiftActive = ref(false);
 
+const keyboardComponent = ref(null);
+const inputComponent = ref(null);
 
-
-// ФУНКЦИЯ ДЛЯ ПЕРЕКЛЮЧЕНИЯ ВИДИМОСТИ КЛАВИАТУРЫ
-const toggleKeyboard = () => {
-  isShowed.value = !isShowed.value;
-};
-
-// ФУНКЦИЯ ДЛЯ ОТОБРАЖЕНИЯ ЗНАЧЕНИЯ ВВОДА
-const displayValue = computed(() => {
-  return inputValue.value;
-});
 const clearInput = () => {
   inputValue.value = "";
+}
+
+
+const onInputFocus = () => {
+  isShowed.value = true;
 }
 
 // ФУНКЦИЯ ДЛЯ ОТОБРАЖЕНИЯ ЗНАЧЕНИЙ КЛАВИШ
@@ -38,7 +36,7 @@ const displayedKeyValue = (key) => {
 
 // ФУНКЦИЯ ДЛЯ ОБРАБОТКИ СПЕЦИАЛЬНЫХ КЛАВИШ
 const handleKeyPress = (key) => {
-  const keyValue = key.keyValue; // Используем keyValue вместо displayedKeyValue
+  const keyValue = key.keyValue;
   switch (keyValue) {
     case "CapsLock":
       capsLockEnabled.value = !capsLockEnabled.value; // ПЕРЕКЛЮЧАЕМ КАПС ЛОК
@@ -59,20 +57,45 @@ const handleKeyPress = (key) => {
       break;
   }
 };
+
+const onDocumentClick = (e) => {
+  if (
+    keyboardComponent.value && keyboardComponent.value.$el.contains(e.target) ||
+    inputComponent.value && inputComponent.value.$el.contains(e.target) ||
+    e.target.closest('.layout-menu') || e.target.closest('.key-langs')
+  ) {
+    return;
+  }
+  isShowed.value = false;
+};
+
+onBeforeMount(() => {
+  document.addEventListener('click', onDocumentClick);
+})
+
+onBeforeUnmount(() => {
+  document.removeEventListener('click', onDocumentClick);
+})
 </script>
 
 <template>
   <div>
-    <InputField v-model="displayValue" />
-    <button @click="toggleKeyboard" class="btn-showed">Открыть/закрыть клавиатуру</button>
+    <InputField ref="inputComponent" v-model="inputValue" @focus="onInputFocus" />
     <transition name="keyboard">
-      <KeyboardContainer v-if="isShowed" @keyPress="handleKeyPress" @deleteAll="clearInput" :capsLockEnabled="capsLockEnabled"
-        :shiftActive="shiftActive" :displayedKeyValue="displayedKeyValue"  />
+      <KeyboardContainer v-if="isShowed" ref="keyboardComponent" @keyPress="handleKeyPress" @deleteAll="clearInput"
+        :capsLockEnabled="capsLockEnabled" :shiftActive="shiftActive" :displayedKeyValue="displayedKeyValue" />
     </transition>
   </div>
 </template>
 
 <style scoped>
+.input{
+  width: 50%;
+  padding: 10px;
+  border: 3px solid #313743;
+  border-radius: 5px;
+  transition: .5s ease;
+}
 @keyframes keyboardDown {
   0% {
     opacity: 1;
@@ -109,6 +132,7 @@ const handleKeyPress = (key) => {
   color: white;
   transition: padding .5s ease, font-weight .5s ease;
 }
+
 .btn-showed:hover {
   padding: 17px;
   font-weight: 700;

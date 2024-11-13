@@ -2,7 +2,8 @@
 import { ref, watch } from "vue";
 
 const props = defineProps(['modelValue']);
-const emit = defineEmits(['update:modelValue']);
+const emit = defineEmits(['update:modelValue', 'focus']);
+
 const inputValue = ref(props.modelValue);
 
 const updateValue = () => {
@@ -17,7 +18,7 @@ watch(() => props.modelValue, (newValue) => {
 
 <template>
   <input type="text" v-model="inputValue" placeholder="Введите текст..." class="input-field"
-    @focus="showKeyboard = true" @input="updateValue">
+    @focus="emit('focus')" @input="updateValue">
 </template>
 
 <style scoped>

@@ -1,13 +1,12 @@
 <script setup>
 import { ref } from "vue";
+import KeyItem from "./KeyItem.vue";
 import KeyButtonLangs from "./KeyButtonLangs.vue";
 import KeyButtonDelete from "./KeyButtonDelete.vue"
 
 
-const emit = defineEmits(['keyPress']);
+const emit = defineEmits(['keyPress', 'deleteAll']);
 const props = defineProps(['capsLockEnabled', 'shiftActive', 'displayedKeyValue']);
-
-
 
 // РАССКЛАДКИ ЯЗЫКОВ ДЛЯ КЛАВИАТУРЫ
 const keyboardLayouts = ref({
@@ -206,11 +205,6 @@ const changeLayout = (layout) => {
   currentLayout.value = layout;
 };
 
-// ФУНКЦИЯ ДЛЯ ОБРАБОТКИ НАЖАТИЙ КЛАВИШ
-const handleKeyPress = (key) => {
-  emit('keyPress', key); // ЭМИТИРИУЕМ ОБЪЕКТ КЛАВИШИ
-};
-
 const hadleDeleteAll = () => {
   emit('deleteAll'); // ЭМИТИРИУЕМ ОБЪЕКТ КЛАВИШИ
 };
@@ -224,28 +218,29 @@ const specialKeys = {
   Space: "key-space",
 };
 
+// ФУНКЦИЯ ЧТОБ СПЕЦИАЛЬНЫЙ КЛАВИШИ БЫЛИ ПОДКРАШЕНЫ КОГДА АКТИВНЫ
+const isKeyActive = (keyValue) => {
+  return (keyValue === 'CapsLock' && props.capsLockEnabled) ||
+    (keyValue === 'Shift' && props.shiftActive);
+};
+
+
+
 </script>
 
 <template>
   <div class="keyboard">
-    <!-- ОТРИСОВКА РЯДОВ КЛАВЫ -->
-    <div v-for="(row, rowIndex) in keyboardLayouts[currentLayout]" :key="rowIndex" class="keyboard-row">
-      <!-- ОТРИСОВКА КЛАВИШ -->
-      <div v-for="(item, itemIndex) in row" :key="itemIndex" @click="handleKeyPress(item)" class="key" :class="[specialKeys[item.keyValue],
-      {
-        'key-active': (item.keyValue === 'CapsLock' && props.capsLockEnabled) ||
-          (item.keyValue === 'Shift' && props.shiftActive)
-      }]">
-        {{ displayedKeyValue(item) }} <!-- ОТОБРАЖЕНИЕ ЗНАЧЕНИЯ КЛАВИШ !-->
-      </div>
+    <div v-for="row in keyboardLayouts[currentLayout]" :key="row" class="keyboard-row">
+      <KeyItem v-for="item in row" :key="item" :displayedKeyValue="displayedKeyValue(item)"
+        :isActive="isKeyActive(item.keyValue)" :specialClass="specialKeys[item.keyValue]"
+        @keyPress="emit('keyPress', item)" />
     </div>
-    <!-- КОМПОНЕНТ ДЛЯ ВЫБОРА РАСКЛАДКИ -->
     <KeyButtonLangs @changeLayout="changeLayout" />
-    <KeyButtonDelete @deleteAll="hadleDeleteAll"/>
+    <KeyButtonDelete @deleteAll="hadleDeleteAll" />
   </div>
 </template>
 
-<style>
+<style scoped>
 .keyboard {
   position: fixed;
   bottom: 0;
@@ -270,59 +265,5 @@ const specialKeys = {
 
 .keyboard-row {
   display: flex;
-}
-
-.key {
-  border-radius: 5px;
-  padding: 10px;
-  margin: 5px;
-  cursor: pointer;
-  flex: 1;
-  background: white;
-  text-align: center;
-}
-
-.key:hover {
-  background: #CCEA58;
-  color: white;
-  font-weight: 700;
-  animation: keyPress .3s ease;
-}
-
-
-
-@keyframes keyPress {
-  0% {
-    transform: scale(1);
-  }
-
-  25% {
-    transform: scale(0.925);
-  }
-
-  50% {
-    transform: scale(0.95);
-  }
-
-  75% {
-    transform: scale(0.975);
-  }
-
-  100% {
-    transform: scale(1);
-  }
-}
-
-.key-wide {
-  flex: 2;
-}
-
-.key-space {
-  flex: 5;
-}
-
-.key-active {
-  background-color: #C68DFE;
-  color: white;
 }
 </style>
