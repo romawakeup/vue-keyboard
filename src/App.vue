@@ -38,7 +38,7 @@ const displayedKeyValue = (key) => {
 
 // ФУНКЦИЯ ДЛЯ ОБРАБОТКИ СПЕЦИАЛЬНЫХ КЛАВИШ
 const handleKeyPress = (key) => {
-  const keyValue = key.keyValue; // Используем keyValue вместо displayedKeyValue
+  const keyValue = key.keyValue; 
   switch (keyValue) {
     case "CapsLock":
       capsLockEnabled.value = !capsLockEnabled.value; // ПЕРЕКЛЮЧАЕМ КАПС ЛОК
