@@ -3,10 +3,17 @@ import { ref, onBeforeMount, onBeforeUnmount } from "vue";
 import InputField from "./components/InputField.vue";
 import KeyboardContainer from "./components/KeyboardContainer.vue";
 
-const inputValue = ref("");
-const isKeyboardVisible = ref(false);
+const inputValues = ref({
+  input1: '',
+  input2: '',
+  input3: ''
+});
 
-const onInputFocus = () => {
+const isKeyboardVisible = ref(false);
+const activeInputId = ref(null);
+
+const onInputFocus = (id) => {
+  activeInputId.value = id;
   isKeyboardVisible.value = true; // ПОКАЗЫВАЕТ КЛАВИАТУРУ ПРИ ФОКУСЕ
 };
 
@@ -27,26 +34,29 @@ onBeforeMount(() => {
 onBeforeUnmount(() => {
   document.removeEventListener('click', onDocumentClick);
 });
+
+const updateInputValue = (id, value) => {
+  inputValues.value[id] = value;
+};
 </script>
 
 <template>
   <div>
-    <InputField v-model="inputValue" @focus="onInputFocus" />
+    <InputField v-model="inputValues['input1']" @focus="() => onInputFocus('input1')" />
+    <InputField v-model="inputValues['input2']" @focus="() => onInputFocus('input2')" />
+    <InputField v-model="inputValues['input3']" @focus="() => onInputFocus('input3')" />
     <transition name="keyboard">
-      <KeyboardContainer v-if="isKeyboardVisible" :inputValue="inputValue" @deleteAll="inputValue = ''"
-        @keyPress="inputValue = $event" />
+      <KeyboardContainer
+        v-if="isKeyboardVisible"
+        :inputValue="inputValues[activeInputId]"
+        @deleteAll="updateInputValue(activeInputId, '')"
+        @keyPress="(value) => updateInputValue(activeInputId, value)"
+      />
     </transition>
   </div>
 </template>
 
 <style scoped>
-.input {
-  width: 50%;
-  padding: 10px;
-  border: 3px solid #313743;
-  border-radius: 5px;
-  transition: .5s ease;
-}
 
 @keyframes keyboardDown {
   0% {

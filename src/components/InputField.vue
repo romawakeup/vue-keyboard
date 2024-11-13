@@ -33,9 +33,9 @@ const updateValue = (event) => {
 
 <style scoped>
 .input-field {
-  margin-top: 10%;
+  /* margin-top: 10%;
   display: flex;
-  justify-self: center;
+  justify-self: center; */
   width: 50%;
   padding: 10px;
   border: 3px solid #313743;
