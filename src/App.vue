@@ -45,14 +45,14 @@ const updateInputValue = (id, value) => {
     <InputField v-model="inputValues['input1']" @focus="() => onInputFocus('input1')" />
     <InputField v-model="inputValues['input2']" @focus="() => onInputFocus('input2')" />
     <InputField v-model="inputValues['input3']" @focus="() => onInputFocus('input3')" />
-    <transition name="keyboard">
+    <Transition name="keyboard">
       <KeyboardContainer
         v-if="isKeyboardVisible"
         :inputValue="inputValues[activeInputId]"
         @deleteAll="updateInputValue(activeInputId, '')"
         @keyPress="(value) => updateInputValue(activeInputId, value)"
       />
-    </transition>
+    </Transition>
   </div>
 </template>
 
