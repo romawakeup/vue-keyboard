@@ -18,7 +18,7 @@ const props = defineProps({
 
 // ФУНКЦИЯ ДЛЯ ОБРАБОТКИ НАЖАТИЯ КЛАВИШИ
 const handleKeyPress = () => {
-  emit('keyPress', props.keyData);
+  emit('keyPress', props.keyValue);
 };
 </script>
 
