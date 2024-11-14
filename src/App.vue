@@ -3,6 +3,7 @@ import { ref, onBeforeMount, onBeforeUnmount } from "vue";
 import InputField from "./components/InputField.vue";
 import KeyboardContainer from "./components/KeyboardContainer.vue";
 
+// ДЛЯ ОТОБРАЖЕНИЯ МНОЖЕСТВА ПОЛЕЙ ВВОДА
 const inputValues = ref({
   input1: '',
   input2: '',
