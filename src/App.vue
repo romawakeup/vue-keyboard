@@ -43,9 +43,9 @@ const updateInputValue = (id, value) => {
 
 <template>
   <div>
-    <InputField v-model="inputValues['input1']" @focus="() => onInputFocus('input1')" />
-    <InputField v-model="inputValues['input2']" @focus="() => onInputFocus('input2')" />
-    <InputField v-model="inputValues['input3']" @focus="() => onInputFocus('input3')" />
+    <InputField placeholder="Введите текст..." v-model="inputValues['input1']" @focus="() => onInputFocus('input1')" />
+    <InputField placeholder="Введите цифры..." v-model="inputValues['input2']" @focus="() => onInputFocus('input2')" />
+    <InputField placeholder="Введите символы..." v-model="inputValues['input3']" @focus="() => onInputFocus('input3')" />
     <Transition name="keyboard">
       <KeyboardContainer
         v-if="isKeyboardVisible"

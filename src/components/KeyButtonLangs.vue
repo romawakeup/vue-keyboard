@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
+import { ref, computed, onBeforeMount, onBeforeUnmount } from 'vue';
 
 const emit = defineEmits(['changeLayout']);
 
@@ -24,17 +24,17 @@ const selectLayout = (layout) => {
 
 const currentLayoutLabel = computed(() => currentLayout.value.toUpperCase());
 
-// ФУНКЦИЯ ДЛЯ ОБРАБОТКИ КЛИКОВ ЗА ПРЕДЕЛАМИ МЕНЮ
-const handleClickOutside = (event) => {
-  const menu = document.querySelector('.layout-menu');
+// ФУНКЦИЯ ДЛЯ ОБРАБОТКИ КЛИКОВ ЗА ПРЕДЕЛАМИ МЕНЮ ЕСЛИК КЛИК БУДЕТ МИМО ТО МЕНЮ ЗАКРОЕТСЯ
+const handleClickOutside = (e) => {
+  const menu = document.querySelector('.menu-layout');
   const button = document.querySelector('.key-langs');
-  if (isMenuVisible.value && menu && !menu.contains(event.target) && !button.contains(event.target)) {
+  if (isMenuVisible.value && menu && !menu.contains(e.target) && !button.contains(e.target)) {
     isMenuVisible.value = false;
   }
 };
 
 
-onMounted(() => {
+onBeforeMount(() => {
   document.addEventListener('click', handleClickOutside);
 });
 

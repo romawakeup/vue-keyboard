@@ -24,7 +24,6 @@ const updateValue = (event) => {
   <input
     type="text"
     :value="inputValue"
-    placeholder="Введите текст..."
     class="input-field"
     @focus="emit('focus')"
     @input="updateValue"
